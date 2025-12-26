@@ -38,7 +38,6 @@ class RoolinkClient:
             headers={
                 "x-api-key": self.api_key,
                 "Content-Type": "application/json",
-                "Accept-Encoding": "gzip, deflate, br",
             },
         )
 
