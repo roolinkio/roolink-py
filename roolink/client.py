@@ -11,7 +11,6 @@ from .types.web import (
     SecCptResponse,
     SBSDRequest,
     SBSDResponse,
-    ParseResponse,
 )
 
 BMP_BASE_URL = "https://bmp.roolink.io"
@@ -91,8 +90,7 @@ class RoolinkClient:
         data = self._request("POST", url, req.to_dict())
         return SBSDResponse.from_dict(data)
 
-    def parse_script(self, script_content: str) -> ParseResponse:
+    def parse_script(self, script_content: str) -> Dict[str, Any]:
         """Parse an Akamai script and return script data."""
         url = f"{WEB_BASE_URL}/api/v1/parse"
-        data = self._request("POST", url, {"scriptContent": script_content})
-        return ParseResponse.from_dict(data)
+        return self._request("POST", url, script_content)

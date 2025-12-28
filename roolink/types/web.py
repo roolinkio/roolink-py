@@ -185,12 +185,4 @@ class SBSDResponse:
         return cls(body=data["body"])
 
 
-@dataclass
-class ParseResponse:
-    """Response from script parsing."""
 
-    script_data: Dict[str, Any]
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ParseResponse":
-        return cls(script_data=data["scriptData"])
