@@ -9,6 +9,7 @@ class BMPSensorRequest:
     app: str
     proxy: str
     language: Optional[str] = None
+    device_id: Optional[str] = None
     android: Optional[bool] = None
     ipad: Optional[bool] = None
 
