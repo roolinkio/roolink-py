@@ -103,6 +103,7 @@ class SecCptRequest:
     timestamp: int
     nonce: str
     difficulty: int
+    count: int
     cookie: str
     sec_cp_challenge: Optional[str] = None
     provider: Optional[str] = None

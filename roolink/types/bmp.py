@@ -59,6 +59,7 @@ class BMPSensorResponse:
     device_model: Optional[str] = None
     device_manufacturer: Optional[str] = None
     sdk_version: Optional[str] = None
+    app_version_code: Optional[int] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "BMPSensorResponse":
@@ -83,4 +84,5 @@ class BMPSensorResponse:
             device_model=data.get("deviceModel"),
             device_manufacturer=data.get("deviceManufacturer"),
             sdk_version=data.get("sdkVersion"),
+            app_version_code=data.get("appVersionCode"),
         )
