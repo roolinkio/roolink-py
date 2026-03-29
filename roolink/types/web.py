@@ -158,6 +158,7 @@ class SBSDRequest:
     legacy: Optional[bool] = None
     script_hash: Optional[str] = None
     script_url: Optional[str] = None
+    language: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         result = {
@@ -172,6 +173,8 @@ class SBSDRequest:
             result["script_hash"] = self.script_hash
         if self.script_url:
             result["script_url"] = self.script_url
+        if self.language:
+            result["language"] = self.language
         return result
 
 
