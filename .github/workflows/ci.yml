@@ -22,3 +22,5 @@ jobs:
       - run: pip install .
       - run: python -c "import roolink"
       - run: python -m compileall -q roolink
+      - run: pip install pytest
+      - run: pytest -q

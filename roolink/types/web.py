@@ -118,6 +118,7 @@ class SecCptRequest:
             "timestamp": self.timestamp,
             "nonce": self.nonce,
             "difficulty": self.difficulty,
+            "count": self.count,
             "cookie": self.cookie,
         }
         if self.sec_cp_challenge:
