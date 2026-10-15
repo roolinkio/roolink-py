@@ -15,7 +15,10 @@ class BMPSensorRequest:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary, excluding None values."""
-        return {k: v for k, v in asdict(self).items() if v is not None}
+        result = {k: v for k, v in asdict(self).items() if v is not None}
+        if "device_id" in result:
+            result["deviceId"] = result.pop("device_id")
+        return result
 
 
 @dataclass

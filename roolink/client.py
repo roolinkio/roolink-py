@@ -38,7 +38,11 @@ class RoolinkClient:
         )
 
     def _request(self, method: str, url: str, body: str, content_type: str) -> Dict[str, Any]:
-        """Make an HTTP request."""
+        """Make an HTTP request and decode the JSON response."""
+        return json.loads(self._send(method, url, body, content_type))
+
+    def _send(self, method: str, url: str, body: str, content_type: str) -> str:
+        """Make an HTTP request and return the response body as text."""
         headers = {
             "x-api-key": self.api_key,
             "Content-Type": content_type,
@@ -54,7 +58,7 @@ class RoolinkClient:
         if response.status_code >= 400:
             raise Exception(f"API error (status {response.status_code}): {response.text}")
 
-        return response.json()
+        return response.text
 
     def __del__(self):
         """Clean up the HTTP client."""
@@ -78,8 +82,8 @@ class RoolinkClient:
     def generate_pixel(self, req: PixelRequest) -> PixelResponse:
         """Generate pixel sensor data."""
         url = f"{WEB_BASE_URL}/api/v1/pixel"
-        data = self._request("POST", url, json.dumps(req.to_dict()), "application/json")
-        return PixelResponse.from_dict(data)
+        text = self._send("POST", url, json.dumps(req.to_dict()), "application/json")
+        return PixelResponse(sensor=text)
 
     def solve_sec_cpt(self, req: SecCptRequest) -> SecCptResponse:
         """Solve a sec-cpt crypto challenge."""
