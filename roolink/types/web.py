@@ -1,5 +1,5 @@
 from typing import Optional, Dict, Any, List
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 
 # Type alias for parsed Akamai script configuration data
 ScriptData = Dict[str, Any]

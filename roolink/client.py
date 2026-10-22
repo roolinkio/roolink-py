@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict, Union
+from typing import Any, Dict
 import httpx
 import json
 
