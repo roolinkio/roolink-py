@@ -28,6 +28,11 @@ dependencies = [
     "httpx[http2]>=0.27.0",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
 [project.urls]
 Homepage = "https://github.com/roolinkio/roolink-py"
 Documentation = "https://docs.roolink.io"

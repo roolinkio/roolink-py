@@ -26,7 +26,7 @@ class WebSensorRequest:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary with correct JSON field names."""
-        result = {
+        result: Dict[str, Any] = {
             "userAgent": self.user_agent,
             "url": self.url,
         }
@@ -162,7 +162,7 @@ class SBSDRequest:
     language: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        result = {
+        result: Dict[str, Any] = {
             "vid": self.vid,
             "userAgent": self.user_agent,
             "bm_o": self.bm_o,
@@ -188,6 +188,3 @@ class SBSDResponse:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SBSDResponse":
         return cls(body=data["body"])
-
-
-
