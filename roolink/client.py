@@ -1,17 +1,18 @@
-from typing import Any, Dict
-import httpx
 import json
+from typing import Any, Dict
+
+import httpx
 
 from .types.bmp import BMPSensorRequest, BMPSensorResponse
 from .types.web import (
-    WebSensorRequest,
-    WebSensorResponse,
     PixelRequest,
     PixelResponse,
-    SecCptRequest,
-    SecCptResponse,
     SBSDRequest,
     SBSDResponse,
+    SecCptRequest,
+    SecCptResponse,
+    WebSensorRequest,
+    WebSensorResponse,
 )
 
 BMP_BASE_URL = "https://bmp.roolink.io"
