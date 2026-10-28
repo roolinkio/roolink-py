@@ -1,3 +1,4 @@
+import gzip
 import json
 
 import httpx
@@ -5,8 +6,8 @@ import httpx
 from roolink import BMPSensorRequest, PixelRequest, RoolinkClient, SecCptRequest
 
 
-def mock_client(handler):
-    client = RoolinkClient("roo_test")
+def mock_client(handler, **kwargs):
+    client = RoolinkClient("roo_test", **kwargs)
     client.client = httpx.Client(transport=httpx.MockTransport(handler))
     return client
 
@@ -47,3 +48,21 @@ def test_sec_cpt_sends_count():
         token="t", timestamp=1, nonce="n", difficulty=1, count=5, cookie="c"
     )
     assert req.to_dict()["count"] == 5
+
+
+def test_compression():
+    script = "var _ac=function(){};"
+    sent = []
+
+    def handler(request):
+        sent.append(request)
+        return httpx.Response(200, json={})
+
+    mock_client(handler).parse_script(script)
+    mock_client(handler, compress=False).parse_script(script)
+    compressed, uncompressed = sent
+
+    assert compressed.headers["Content-Encoding"] == "gzip"
+    assert gzip.decompress(compressed.content).decode() == script
+    assert "Content-Encoding" not in uncompressed.headers
+    assert uncompressed.content.decode() == script

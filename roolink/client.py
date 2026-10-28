@@ -1,3 +1,4 @@
+import gzip
 import json
 from typing import Any, Dict
 
@@ -23,14 +24,16 @@ DEFAULT_TIMEOUT = 30.0
 class RoolinkClient:
     """Client for interacting with Roolink services."""
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, compress: bool = True):
         """
         Initialize the Roolink client.
 
         Args:
             api_key: Your Roolink API key
+            compress: Whether parse_script gzips the script it sends
         """
         self.api_key = api_key
+        self.compress = compress
         self.timeout = DEFAULT_TIMEOUT
 
         self.client = httpx.Client(
@@ -39,22 +42,38 @@ class RoolinkClient:
         )
 
     def _request(
-        self, method: str, url: str, body: str, content_type: str
+        self,
+        method: str,
+        url: str,
+        body: str,
+        content_type: str,
+        compress: bool = False,
     ) -> Dict[str, Any]:
         """Make an HTTP request and decode the JSON response."""
-        return json.loads(self._send(method, url, body, content_type))
+        return json.loads(
+            self._send(method, url, body, content_type, compress=compress)
+        )
 
-    def _send(self, method: str, url: str, body: str, content_type: str) -> str:
-        """Make an HTTP request and return the response body as text."""
+    def _send(
+        self,
+        method: str,
+        url: str,
+        body: str,
+        content_type: str,
+        compress: bool = False,
+    ) -> str:
+        """Make an HTTP request, gzipping the body if compress is set, and return the response body as text."""
         headers = {
             "x-api-key": self.api_key,
             "Content-Type": content_type,
         }
+        if compress:
+            headers["Content-Encoding"] = "gzip"
 
         response = self.client.request(
             method=method,
             url=url,
-            content=body,
+            content=gzip.compress(body.encode()) if compress else body,
             headers=headers,
         )
 
@@ -115,4 +134,6 @@ class RoolinkClient:
     def parse_script(self, script_content: str) -> Dict[str, Any]:
         """Parse an Akamai script and return script data."""
         url = f"{WEB_BASE_URL}/api/v1/parse"
-        return self._request("POST", url, script_content, "text/plain")
+        return self._request(
+            "POST", url, script_content, "text/plain", compress=self.compress
+        )
