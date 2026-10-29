@@ -1,106 +1,45 @@
-<div align="center">
+# Roolink Python SDK
 
-# 🔗 Roolink Python SDK
+Python client (`roolink`) for the Roolink Akamai Web (`web.roolink.io`) and Akamai BMP (`bmp.roolink.io`) APIs.
 
-### Enterprise-grade Akamai sensor generation for Python
+Documentation: https://docs.roolink.io
 
-[![PyPI](https://img.shields.io/badge/PyPI-1.0.0-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://pypi.org/project/roolink/)
-[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
+## Install
 
-**[📚 Documentation](https://docs.roolink.io/)** • **[💬 Discord](https://discord.gg/rooapi)**
-
----
-
-</div>
-
-## 🚀 Overview
-
-Production-ready APIs for generating Akamai sensor data across web and mobile platforms. This SDK handles authentication, requests, and response parsing with full type hints.
-
-### 🎯 Supported Services
-
-| Service | Features |
-| --- | --- |
-| **🌐 Web API** | Sensor generation, pixel challenges, SBSD, sec-cpt solving |
-| **📱 BMP API** | iOS & Android mobile app sensor generation |
-
----
-
-## 📦 Installation
-
-```bash
+```sh
 pip install roolink
 ```
 
-## ⚡ Quick Start
+## Usage
 
 ```python
-from roolink import RoolinkClient
+from roolink import RoolinkClient, WebSensorRequest
 
-client = RoolinkClient('your-api-key')
-sensor = client.generate_web_sensor(req)
+client = RoolinkClient("your-api-key")
+
+script_data = client.parse_script(script_text)
+sensor = client.generate_web_sensor(
+    WebSensorRequest(
+        user_agent=user_agent,
+        url="https://example.com/",
+        abck=abck_cookie,
+        bm_sz=bm_sz_cookie,
+        script_data=script_data,
+    )
+)
 ```
 
----
+## Methods
 
-## 🌐 Web API
+| Method | Endpoint |
+| --- | --- |
+| `parse_script(script_text)` | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; pass `compress=False` to `RoolinkClient` to disable) |
+| `generate_web_sensor(WebSensorRequest)` | `POST https://web.roolink.io/api/v1/sensor` |
+| `generate_pixel(PixelRequest)` | `POST https://web.roolink.io/api/v1/pixel` |
+| `solve_sec_cpt(SecCptRequest)` | `POST https://web.roolink.io/api/v1/sec-cpt` |
+| `solve_sbsd(SBSDRequest)` | `POST https://web.roolink.io/api/v1/sbsd` |
+| `generate_bmp_sensor(BMPSensorRequest)` | `POST https://bmp.roolink.io/api/v1/sensor` (`android=False` for iOS, `android=True` for Android) |
 
-```python
-# Sensor Generation
-client.generate_web_sensor(req)
+## License
 
-# Pixel Challenges
-client.generate_pixel(req)
-
-# Sec-Cpt Challenges
-client.solve_sec_cpt(req)
-
-# SBSD Challenges
-client.solve_sbsd(req)
-
-# Script Parsing
-client.parse_script(script_content)
-```
-
----
-
-## 📱 BMP API
-
-```python
-# iOS Sensors (android=False)
-client.generate_bmp_sensor(BMPSensorRequest(
-    android=False,
-))
-
-# Android Sensors (android=True)
-client.generate_bmp_sensor(BMPSensorRequest(
-    android=True,
-))
-```
-
----
-
-## 🆘 Error Handling
-
-```python
-try:
-    result = client.generate_web_sensor(req)
-except Exception as e:
-    # handle error
-    pass
-```
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-<div align="center">
-
-**Built with 💜**
-
-</div>
+MIT — see [LICENSE](LICENSE).

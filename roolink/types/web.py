@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-# Type alias for parsed Akamai script configuration data
 ScriptData = Dict[str, Any]
 
 
 @dataclass
 class WebSensorRequest:
-    """Request to generate an Akamai web sensor."""
-
     user_agent: str
     url: str
     flags: Optional[str] = None
@@ -25,7 +22,6 @@ class WebSensorRequest:
     script_url: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary with correct JSON field names."""
         result: Dict[str, Any] = {
             "userAgent": self.user_agent,
             "url": self.url,
@@ -59,8 +55,6 @@ class WebSensorRequest:
 
 @dataclass
 class WebSensorResponse:
-    """Response from web sensor generation."""
-
     sensor: str
 
     @classmethod
@@ -70,8 +64,6 @@ class WebSensorResponse:
 
 @dataclass
 class PixelRequest:
-    """Request to generate pixel data."""
-
     user_agent: str
     bazadebezolkohpepadr: int
     hash: str
@@ -86,8 +78,6 @@ class PixelRequest:
 
 @dataclass
 class PixelResponse:
-    """Response from pixel generation."""
-
     sensor: str
 
     @classmethod
@@ -97,8 +87,6 @@ class PixelResponse:
 
 @dataclass
 class SecCptRequest:
-    """Request to solve a sec-cpt challenge."""
-
     token: str
     timestamp: int
     nonce: str
@@ -138,8 +126,6 @@ class SecCptRequest:
 
 @dataclass
 class SecCptResponse:
-    """Response from sec-cpt challenge."""
-
     token: str
     answers: List[str]
 
@@ -150,8 +136,6 @@ class SecCptResponse:
 
 @dataclass
 class SBSDRequest:
-    """Request to solve SBSD challenge."""
-
     vid: str
     user_agent: str
     bm_o: str
@@ -181,8 +165,6 @@ class SBSDRequest:
 
 @dataclass
 class SBSDResponse:
-    """Response from SBSD challenge."""
-
     body: str
 
     @classmethod

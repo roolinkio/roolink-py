@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Optional
 
 @dataclass
 class BMPSensorRequest:
-    """Request to generate an Akamai BMP sensor."""
-
     app: str
     proxy: str
     language: Optional[str] = None
@@ -14,7 +12,6 @@ class BMPSensorRequest:
     ipad: Optional[bool] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary, excluding None values."""
         result = {k: v for k, v in asdict(self).items() if v is not None}
         if "device_id" in result:
             result["deviceId"] = result.pop("device_id")
@@ -23,8 +20,6 @@ class BMPSensorRequest:
 
 @dataclass
 class Cookie:
-    """Cookie returned from BMP sensor generation."""
-
     name: str
     value: str
     domain: str
@@ -40,8 +35,6 @@ class Cookie:
 
 @dataclass
 class BMPSensorResponse:
-    """Response from BMP sensor generation."""
-
     sensor: str
     platform: str
     device_id: str
@@ -50,14 +43,12 @@ class BMPSensorResponse:
     screen_width: int
     language: str
 
-    # iOS specific fields
     ios: Optional[str] = None
     kernel_os_release: Optional[str] = None
     kernel_os_version: Optional[str] = None
     machine_id: Optional[str] = None
     cookies: Optional[List[Cookie]] = None
 
-    # Android specific fields
     android: Optional[str] = None
     device_model: Optional[str] = None
     device_manufacturer: Optional[str] = None
