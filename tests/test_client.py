@@ -3,6 +3,7 @@ import json
 
 import httpx
 
+import roolink
 from roolink import BMPSensorRequest, PixelRequest, RoolinkClient, SecCptRequest
 
 
@@ -66,3 +67,14 @@ def test_compression():
     assert gzip.decompress(compressed.content).decode() == script
     assert "Content-Encoding" not in uncompressed.headers
     assert uncompressed.content.decode() == script
+
+
+def test_user_agent_names_sdk_and_version():
+    sent = []
+
+    def handler(request):
+        sent.append(request)
+        return httpx.Response(200, json={})
+
+    mock_client(handler).parse_script("var _ac=function(){};")
+    assert sent[0].headers["User-Agent"] == f"roolink-py/{roolink.__version__}"

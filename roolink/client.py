@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 import httpx
 
+from . import __version__
 from .types.bmp import BMPSensorRequest, BMPSensorResponse
 from .types.web import (
     PixelRequest,
@@ -19,6 +20,7 @@ from .types.web import (
 BMP_BASE_URL = "https://bmp.roolink.io"
 WEB_BASE_URL = "https://web.roolink.io"
 DEFAULT_TIMEOUT = 30.0
+USER_AGENT = f"roolink-py/{__version__}"
 
 
 class RoolinkClient:
@@ -56,6 +58,7 @@ class RoolinkClient:
         headers = {
             "x-api-key": self.api_key,
             "Content-Type": content_type,
+            "User-Agent": USER_AGENT,
         }
         if compress:
             headers["Content-Encoding"] = "gzip"
