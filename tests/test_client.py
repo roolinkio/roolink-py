@@ -1,11 +1,16 @@
+import dataclasses
 import gzip
 import json
 
 import httpx
+import pytest
 
 import roolink
 from roolink import (
     BMPSensorRequest,
+    ImpervaPayloadRequest,
+    ImpervaUTMVCRequest,
+    ImpervaUTMVCResponse,
     KasadaBotIDRequest,
     KasadaBotIDResponse,
     KasadaCDRequest,
@@ -91,30 +96,30 @@ def test_user_agent_names_sdk_and_version():
     assert sent[0].headers["User-Agent"] == f"roolink-py/{roolink.__version__}"
 
 
-def kasada_client(reply):
-    """Returns a client whose API answers every request with reply, and the list of requests it sent."""
+def json_client(reply, status=200):
+    """Returns a client whose API answers every request with reply and status, and the list of requests it sent."""
     sent = []
 
     def handler(request):
         sent.append(request)
         return httpx.Response(
-            200, text=reply, headers={"Content-Type": "application/json"}
+            status, text=reply, headers={"Content-Type": "application/json"}
         )
 
     return mock_client(handler), sent
 
 
-def assert_kasada_request(sent, path, body):
+def assert_json_request(sent, url, body):
     (request,) = sent
     assert request.method == "POST"
-    assert str(request.url) == f"https://ksd.roolink.io{path}"
+    assert str(request.url) == url
     assert request.headers["x-api-key"] == "roo_test"
     assert request.headers["Content-Type"] == "application/json"
     assert json.loads(request.content) == body
 
 
 def test_kasada_payload():
-    client, sent = kasada_client(
+    client, sent = json_client(
         '{"headers":{"x-kpsdk-ct":"ct","x-kpsdk-v":"j-1.1.0"},"payload":"APv/EA=="}\n'
     )
 
@@ -127,9 +132,9 @@ def test_kasada_payload():
             user_agent="Mozilla/5.0",
         )
     )
-    assert_kasada_request(
+    assert_json_request(
         sent,
-        "/api/v1/payload",
+        "https://ksd.roolink.io/api/v1/payload",
         {
             "script": "(function(){})();",
             "ipsUrl": "https://www.example.com/a/b/ips.js?x-kpsdk-v=j-1.1.0",
@@ -156,21 +161,23 @@ def test_kasada_cd():
         ("eyJ4IjoxfQ==", {**session, "fc": "eyJ4IjoxfQ=="}),
         (None, session),
     ]:
-        client, sent = kasada_client(json.dumps({"payload": cd}))
+        client, sent = json_client(json.dumps({"payload": cd}))
         resp = client.generate_kasada_cd(KasadaCDRequest(**session, fc=fc))
-        assert_kasada_request(sent, "/api/v1/cd", body)
+        assert_json_request(sent, "https://ksd.roolink.io/api/v1/cd", body)
         assert resp == KasadaCDResponse(payload=cd)
 
 
 def test_kasada_bot_id():
     header = '{"b":0,"v":0.08084381062192014,"e":"eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..uydqejFMULzuEHyK.Eh2s.aM1k","s":"q+/0Zm9v","d":2,"vr":"3"}'
-    client, sent = kasada_client(header + "\n")
+    client, sent = json_client(header + "\n")
 
     resp = client.generate_kasada_bot_id(
         KasadaBotIDRequest(script="(function(){})();")
     )
-    assert_kasada_request(
-        sent, "/api/v1/botid", {"script": "(function(){})();"}
+    assert_json_request(
+        sent,
+        "https://ksd.roolink.io/api/v1/botid",
+        {"script": "(function(){})();"},
     )
     assert resp == KasadaBotIDResponse(
         b=0,
@@ -182,3 +189,100 @@ def test_kasada_bot_id():
     )
     # The x-is-human header is the response serialized back to JSON, which must match what the API sent.
     assert resp.to_header() == header
+
+
+IMPERVA_PAYLOAD = ImpervaPayloadRequest(
+    script="(function(){})();",
+    script_url="/Hedge-the-Stage-Thy-Seed/script.js",
+    page_url="https://www.example.com/",
+    user_agent="Mozilla/5.0",
+    language="en-US,en;q=0.9",
+)
+
+
+def test_imperva_payload():
+    # Callers post the submission to Imperva unchanged, so the client must return the text the API sent.
+    submission = '{"solution":{"interrogation":{"p":"AAEC/w==","st":1788893087,"sr":3420118839,"cr":2045817226,"og":2},"version":"stable"},"old_token":null,"error":null,"errors":[],"performance":{"1030820235":41,"4203433130":12,"total":43}}'
+    body = {
+        "script": "(function(){})();",
+        "scriptUrl": "/Hedge-the-Stage-Thy-Seed/script.js",
+        "pageUrl": "https://www.example.com/",
+        "userAgent": "Mozilla/5.0",
+        "language": "en-US,en;q=0.9",
+    }
+
+    for pow, sent_body in [
+        (
+            "eyJjIjoiYWJjIiwiZCI6NH0=",
+            {**body, "pow": "eyJjIjoiYWJjIiwiZCI6NH0="},
+        ),
+        (None, body),
+    ]:
+        client, sent = json_client(submission)
+        resp = client.generate_imperva_payload(
+            dataclasses.replace(IMPERVA_PAYLOAD, pow=pow)
+        )
+        assert_json_request(
+            sent, "https://imperva.roolink.io/api/v1/payload", sent_body
+        )
+        assert resp == submission
+
+
+def test_imperva_payload_error():
+    # An error body is JSON as well, and posting it to Imperva as a submission would fail without saying why.
+    client, _ = json_client(
+        '{"code":"device_not_found","error":"no collected browser has this User-Agent"}',
+        status=422,
+    )
+
+    with pytest.raises(Exception, match="device_not_found"):
+        client.generate_imperva_payload(IMPERVA_PAYLOAD)
+
+
+def test_imperva_utmvc():
+    cookie = {
+        "name": "___utmvc",
+        "value": "jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==",
+        "cookie": "___utmvc=jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==",
+        "setCookie": "___utmvc=jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==; expires=Mon, 09 Nov 2026 19:04:40 GMT; path=/",
+        "fingerprint": "navigator%3Dtrue,navigator.vendor%3DGoogle%20Inc.",
+        "digest": "7261",
+        "signature": "9da49ba49f5fa992a3a663a1a3a7a9",
+        "salt": "fresh-salt-plus",
+        "key": "fresh",
+        "version": "version-one",
+        "windowKeyCount": 289,
+    }
+
+    # The API requires cookies, so an empty document.cookie must still be sent.
+    for cookies in ["incap_ses_1234_567890=abc; visid_incap_567890=def", ""]:
+        client, sent = json_client(json.dumps(cookie) + "\n")
+        resp = client.generate_imperva_utmvc(
+            ImpervaUTMVCRequest(
+                script="(function(){})();",
+                cookies=cookies,
+                user_agent="Mozilla/5.0",
+            )
+        )
+        assert_json_request(
+            sent,
+            "https://imperva.roolink.io/api/v1/utmvc",
+            {
+                "script": "(function(){})();",
+                "cookies": cookies,
+                "userAgent": "Mozilla/5.0",
+            },
+        )
+        assert resp == ImpervaUTMVCResponse(
+            name="___utmvc",
+            value="jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==",
+            cookie="___utmvc=jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==",
+            set_cookie="___utmvc=jxKgPCxkaWdlc3Q9NzI2MSxzPTlkYTQ5YmE0OWY1ZmE5OTJhM2E2NjNhMWEzYTdhOQ==; expires=Mon, 09 Nov 2026 19:04:40 GMT; path=/",
+            fingerprint="navigator%3Dtrue,navigator.vendor%3DGoogle%20Inc.",
+            digest="7261",
+            signature="9da49ba49f5fa992a3a663a1a3a7a9",
+            salt="fresh-salt-plus",
+            key="fresh",
+            version="version-one",
+            window_key_count=289,
+        )

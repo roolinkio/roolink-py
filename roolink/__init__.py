@@ -3,6 +3,11 @@ __version__ = "1.4.0"
 
 from .client import RoolinkClient
 from .types.bmp import BMPSensorRequest, BMPSensorResponse, Cookie
+from .types.imperva import (
+    ImpervaPayloadRequest,
+    ImpervaUTMVCRequest,
+    ImpervaUTMVCResponse,
+)
 from .types.kasada import (
     KasadaBotIDRequest,
     KasadaBotIDResponse,
@@ -41,4 +46,7 @@ __all__ = [
     "KasadaCDResponse",
     "KasadaBotIDRequest",
     "KasadaBotIDResponse",
+    "ImpervaPayloadRequest",
+    "ImpervaUTMVCRequest",
+    "ImpervaUTMVCResponse",
 ]

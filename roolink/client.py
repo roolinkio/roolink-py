@@ -6,6 +6,11 @@ import httpx
 
 from . import __version__
 from .types.bmp import BMPSensorRequest, BMPSensorResponse
+from .types.imperva import (
+    ImpervaPayloadRequest,
+    ImpervaUTMVCRequest,
+    ImpervaUTMVCResponse,
+)
 from .types.kasada import (
     KasadaBotIDRequest,
     KasadaBotIDResponse,
@@ -28,6 +33,7 @@ from .types.web import (
 BMP_BASE_URL = "https://bmp.roolink.io"
 WEB_BASE_URL = "https://web.roolink.io"
 KASADA_BASE_URL = "https://ksd.roolink.io"
+IMPERVA_BASE_URL = "https://imperva.roolink.io"
 DEFAULT_TIMEOUT = 30.0
 USER_AGENT = f"roolink-py/{__version__}"
 
@@ -156,3 +162,20 @@ class RoolinkClient:
             "POST", url, json.dumps(req.to_dict()), "application/json"
         )
         return KasadaBotIDResponse.from_dict(data)
+
+    # The Reese84 submission is returned as the API sent it, because it must be posted to the challenge endpoint
+    # unchanged.
+    def generate_imperva_payload(self, req: ImpervaPayloadRequest) -> str:
+        url = f"{IMPERVA_BASE_URL}/api/v1/payload"
+        return self._send(
+            "POST", url, json.dumps(req.to_dict()), "application/json"
+        )
+
+    def generate_imperva_utmvc(
+        self, req: ImpervaUTMVCRequest
+    ) -> ImpervaUTMVCResponse:
+        url = f"{IMPERVA_BASE_URL}/api/v1/utmvc"
+        data = self._request(
+            "POST", url, json.dumps(req.to_dict()), "application/json"
+        )
+        return ImpervaUTMVCResponse.from_dict(data)
