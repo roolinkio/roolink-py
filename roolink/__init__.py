@@ -3,6 +3,14 @@ __version__ = "1.3.0"
 
 from .client import RoolinkClient
 from .types.bmp import BMPSensorRequest, BMPSensorResponse, Cookie
+from .types.kasada import (
+    KasadaBotIDRequest,
+    KasadaBotIDResponse,
+    KasadaCDRequest,
+    KasadaCDResponse,
+    KasadaPayloadRequest,
+    KasadaPayloadResponse,
+)
 from .types.web import (
     PixelRequest,
     PixelResponse,
@@ -27,4 +35,10 @@ __all__ = [
     "SecCptResponse",
     "SBSDRequest",
     "SBSDResponse",
+    "KasadaPayloadRequest",
+    "KasadaPayloadResponse",
+    "KasadaCDRequest",
+    "KasadaCDResponse",
+    "KasadaBotIDRequest",
+    "KasadaBotIDResponse",
 ]

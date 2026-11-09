@@ -6,6 +6,14 @@ import httpx
 
 from . import __version__
 from .types.bmp import BMPSensorRequest, BMPSensorResponse
+from .types.kasada import (
+    KasadaBotIDRequest,
+    KasadaBotIDResponse,
+    KasadaCDRequest,
+    KasadaCDResponse,
+    KasadaPayloadRequest,
+    KasadaPayloadResponse,
+)
 from .types.web import (
     PixelRequest,
     PixelResponse,
@@ -19,6 +27,7 @@ from .types.web import (
 
 BMP_BASE_URL = "https://bmp.roolink.io"
 WEB_BASE_URL = "https://web.roolink.io"
+KASADA_BASE_URL = "https://ksd.roolink.io"
 DEFAULT_TIMEOUT = 30.0
 USER_AGENT = f"roolink-py/{__version__}"
 
@@ -122,3 +131,28 @@ class RoolinkClient:
         return self._request(
             "POST", url, script_content, "text/plain", compress=self.compress
         )
+
+    def generate_kasada_payload(
+        self, req: KasadaPayloadRequest
+    ) -> KasadaPayloadResponse:
+        url = f"{KASADA_BASE_URL}/api/v1/payload"
+        data = self._request(
+            "POST", url, json.dumps(req.to_dict()), "application/json"
+        )
+        return KasadaPayloadResponse.from_dict(data)
+
+    def generate_kasada_cd(self, req: KasadaCDRequest) -> KasadaCDResponse:
+        url = f"{KASADA_BASE_URL}/api/v1/cd"
+        data = self._request(
+            "POST", url, json.dumps(req.to_dict()), "application/json"
+        )
+        return KasadaCDResponse.from_dict(data)
+
+    def generate_kasada_bot_id(
+        self, req: KasadaBotIDRequest
+    ) -> KasadaBotIDResponse:
+        url = f"{KASADA_BASE_URL}/api/v1/botid"
+        data = self._request(
+            "POST", url, json.dumps(req.to_dict()), "application/json"
+        )
+        return KasadaBotIDResponse.from_dict(data)
