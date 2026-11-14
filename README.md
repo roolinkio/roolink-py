@@ -1,8 +1,10 @@
 # Roolink Python SDK
 
-Python client (`roolink`) for the Roolink Akamai Web (`web.roolink.io`), Akamai BMP (`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva (`imperva.roolink.io`) APIs.
+Python client (`roolink`) for the Roolink Akamai Web (`web.roolink.io`), Akamai
+BMP (`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva
+(`imperva.roolink.io`) APIs.
 
-Documentation: https://docs.roolink.io
+Documentation: <https://docs.roolink.io>
 
 ## Install
 
@@ -28,11 +30,14 @@ with RoolinkClient("your-api-key") as client:
     )
 ```
 
-The client keeps its connections open for reuse. Use it in a `with` block, or call `client.close()` when you are done with it, to release them.
+The client keeps its connections open for reuse. Use it in a `with` block, or
+call `client.close()` when you are done with it, to release them.
 
 ## Errors
 
-When the API answers with an error status, the client raises `RoolinkError`, whose message holds the status and the response body. It is a subclass of `Exception`.
+When the API answers with an error status, the client raises `RoolinkError`,
+whose message holds the status and the response body. It is a subclass of
+`Exception`.
 
 ```python
 from roolink import RoolinkError
@@ -61,7 +66,10 @@ except RoolinkError as error:
 
 ## Kasada
 
-`generate_kasada_payload` decodes the payload from base64, so `payload` is the `/tl` request body as `bytes`. Each protected request needs a new `generate_kasada_cd`, whose `payload` is the `x-kpsdk-cd` header value. For Vercel BotID, the `x-is-human` header is the response's `to_header()`.
+`generate_kasada_payload` decodes the payload from base64, so `payload` is the
+`/tl` request body as `bytes`. Each protected request needs a new
+`generate_kasada_cd`, whose `payload` is the `x-kpsdk-cd` header value. For
+Vercel BotID, the `x-is-human` header is the response's `to_header()`.
 
 ```python
 from roolink import KasadaBotIDRequest, KasadaCDRequest, KasadaPayloadRequest
@@ -88,7 +96,11 @@ is_human = client.generate_kasada_bot_id(
 
 ## Imperva
 
-`generate_imperva_payload` returns the Reese84 submission as the JSON text the API sent, which the site expects unchanged. Pass `pow` only when the site's GPC request returns a challenge. `generate_imperva_utmvc` takes every cookie the site has set as one `document.cookie` string, including the `incap_ses_*` cookies, and returns the `___utmvc` cookie.
+`generate_imperva_payload` returns the Reese84 submission as the JSON text the
+API sent, which the site expects unchanged. Pass `pow` only when the site's GPC
+request returns a challenge. `generate_imperva_utmvc` takes every cookie the
+site has set as one `document.cookie` string, including the `incap_ses_*`
+cookies, and returns the `___utmvc` cookie.
 
 ```python
 from roolink import ImpervaPayloadRequest, ImpervaUTMVCRequest
@@ -116,4 +128,4 @@ cookie = client.generate_imperva_utmvc(
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
