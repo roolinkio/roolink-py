@@ -1,7 +1,7 @@
 import base64
 import json
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 @dataclass
@@ -12,7 +12,7 @@ class KasadaPayloadRequest:
     referer: str
     user_agent: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "script": self.script,
             "ipsUrl": self.ips_url,
@@ -24,12 +24,12 @@ class KasadaPayloadRequest:
 
 @dataclass
 class KasadaPayloadResponse:
-    headers: Dict[str, str]
+    headers: dict[str, str]
     # The /tl request body, decoded from the base64 the API sends.
     payload: bytes
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "KasadaPayloadResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "KasadaPayloadResponse":
         return cls(
             headers=data["headers"],
             payload=base64.b64decode(data["payload"]),
@@ -41,10 +41,10 @@ class KasadaCDRequest:
     st: int
     ct: str
     domain: str
-    fc: Optional[str] = None
+    fc: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "st": self.st,
             "ct": self.ct,
             "domain": self.domain,
@@ -60,7 +60,7 @@ class KasadaCDResponse:
     payload: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "KasadaCDResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "KasadaCDResponse":
         return cls(payload=data["payload"])
 
 
@@ -68,7 +68,7 @@ class KasadaCDResponse:
 class KasadaBotIDRequest:
     script: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {"script": self.script}
 
 
@@ -82,7 +82,7 @@ class KasadaBotIDResponse:
     vr: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "KasadaBotIDResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "KasadaBotIDResponse":
         return cls(
             b=data["b"],
             v=data["v"],
@@ -93,5 +93,8 @@ class KasadaBotIDResponse:
         )
 
     def to_header(self) -> str:
-        """Returns the x-is-human header value, compact JSON in the API's field order as a browser sends it."""
+        """Returns the x-is-human header value.
+
+        It is compact JSON in the API's field order, as a browser sends it.
+        """
         return json.dumps(asdict(self), separators=(",", ":"))

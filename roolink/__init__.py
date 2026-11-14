@@ -1,7 +1,8 @@
-# client.py imports __version__ while this module is still running, so it is set before the imports.
+# client.py imports __version__ while this module is still running, so it is
+# set before the imports.
 __version__ = "1.5.0"
 
-from .client import RoolinkClient
+from .client import RoolinkClient, RoolinkError
 from .types.bmp import BMPSensorRequest, BMPSensorResponse, Cookie
 from .types.imperva import (
     ImpervaPayloadRequest,
@@ -29,6 +30,7 @@ from .types.web import (
 
 __all__ = [
     "RoolinkClient",
+    "RoolinkError",
     "BMPSensorRequest",
     "BMPSensorResponse",
     "Cookie",

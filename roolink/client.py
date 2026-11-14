@@ -1,6 +1,7 @@
 import gzip
 import json
-from typing import Any, Dict
+from types import TracebackType
+from typing import Any
 
 import httpx
 
@@ -38,9 +39,20 @@ DEFAULT_TIMEOUT = 30.0
 USER_AGENT = f"roolink-py/{__version__}"
 
 
+class RoolinkError(Exception):
+    """Raised when the API answers with an error status.
+
+    The message holds the status and the response body.
+    """
+
+
 class RoolinkClient:
-    def __init__(self, api_key: str, compress: bool = True):
-        """Initialize the client. If compress is True, parse_script gzips request bodies."""
+    def __init__(self, api_key: str, compress: bool = True) -> None:
+        """Creates a client that sends api_key with every request.
+
+        When compress is True, parse_script gzips its request body. The client
+        keeps connections open until close is called or a with block ends.
+        """
         self.api_key = api_key
         self.compress = compress
         self.timeout = DEFAULT_TIMEOUT
@@ -57,7 +69,7 @@ class RoolinkClient:
         body: str,
         content_type: str,
         compress: bool = False,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         return json.loads(
             self._send(method, url, body, content_type, compress=compress)
         )
@@ -86,15 +98,36 @@ class RoolinkClient:
         )
 
         if response.status_code >= 400:
-            raise Exception(
+            raise RoolinkError(
                 f"API error (status {response.status_code}): {response.text}"
             )
 
         return response.text
 
-    def __del__(self):
+    def close(self) -> None:
+        """Closes the client's connections. Calling it again does nothing."""
+        self.client.close()
+
+    def __enter__(self) -> "RoolinkClient":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
+
+    def __del__(self) -> None:
+        """Closes the client for callers that never call close.
+
+        Python does not promise to run it, so close the client with close or a
+        with block instead.
+        """
+        # The attribute is missing when __init__ failed before setting it.
         if hasattr(self, "client"):
-            self.client.close()
+            self.close()
 
     def generate_bmp_sensor(self, req: BMPSensorRequest) -> BMPSensorResponse:
         url = f"{BMP_BASE_URL}/api/v1/sensor"
@@ -110,8 +143,8 @@ class RoolinkClient:
         )
         return WebSensorResponse.from_dict(data)
 
-    # /pixel returns the sensor as text/plain, not JSON.
     def generate_pixel(self, req: PixelRequest) -> PixelResponse:
+        """Returns the sensor, which /pixel sends as text/plain, not JSON."""
         url = f"{WEB_BASE_URL}/api/v1/pixel"
         text = self._send(
             "POST", url, json.dumps(req.to_dict()), "application/json"
@@ -132,7 +165,7 @@ class RoolinkClient:
         )
         return SBSDResponse.from_dict(data)
 
-    def parse_script(self, script_content: str) -> Dict[str, Any]:
+    def parse_script(self, script_content: str) -> dict[str, Any]:
         url = f"{WEB_BASE_URL}/api/v1/parse"
         return self._request(
             "POST", url, script_content, "text/plain", compress=self.compress
@@ -163,9 +196,11 @@ class RoolinkClient:
         )
         return KasadaBotIDResponse.from_dict(data)
 
-    # The Reese84 submission is returned as the API sent it, because it must be posted to the challenge endpoint
-    # unchanged.
     def generate_imperva_payload(self, req: ImpervaPayloadRequest) -> str:
+        """Returns the Reese84 submission as the text the API sent.
+
+        Post it to the challenge endpoint unchanged.
+        """
         url = f"{IMPERVA_BASE_URL}/api/v1/payload"
         return self._send(
             "POST", url, json.dumps(req.to_dict()), "application/json"

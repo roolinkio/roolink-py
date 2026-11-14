@@ -1,28 +1,28 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-ScriptData = Dict[str, Any]
+ScriptData = dict[str, Any]
 
 
 @dataclass
 class WebSensorRequest:
     user_agent: str
     url: str
-    flags: Optional[str] = None
-    abck: Optional[str] = None
-    bm_sz: Optional[str] = None
-    sec_cpt: Optional[bool] = None
-    index: Optional[int] = None
-    stepper: Optional[bool] = None
-    keyboard: Optional[bool] = None
-    count: Optional[bool] = None
-    language: Optional[str] = None
-    custom_sensor: Optional[bool] = None
-    script_data: Optional[ScriptData] = None
-    script_url: Optional[str] = None
+    flags: str | None = None
+    abck: str | None = None
+    bm_sz: str | None = None
+    sec_cpt: bool | None = None
+    index: int | None = None
+    stepper: bool | None = None
+    keyboard: bool | None = None
+    count: bool | None = None
+    language: str | None = None
+    custom_sensor: bool | None = None
+    script_data: ScriptData | None = None
+    script_url: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "userAgent": self.user_agent,
             "url": self.url,
         }
@@ -58,7 +58,7 @@ class WebSensorResponse:
     sensor: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "WebSensorResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "WebSensorResponse":
         return cls(sensor=data["sensor"])
 
 
@@ -68,7 +68,7 @@ class PixelRequest:
     bazadebezolkohpepadr: int
     hash: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "userAgent": self.user_agent,
             "bazadebezolkohpepadr": self.bazadebezolkohpepadr,
@@ -81,7 +81,7 @@ class PixelResponse:
     sensor: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "PixelResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "PixelResponse":
         return cls(sensor=data["sensor"])
 
 
@@ -93,15 +93,15 @@ class SecCptRequest:
     difficulty: int
     count: int
     cookie: str
-    sec_cp_challenge: Optional[str] = None
-    provider: Optional[str] = None
-    branding_url_content: Optional[str] = None
-    chlg_duration: Optional[int] = None
-    timeout: Optional[int] = None
-    cpu: Optional[bool] = None
+    sec_cp_challenge: str | None = None
+    provider: str | None = None
+    branding_url_content: str | None = None
+    chlg_duration: int | None = None
+    timeout: int | None = None
+    cpu: bool | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        result = {
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "token": self.token,
             "timestamp": self.timestamp,
             "nonce": self.nonce,
@@ -127,10 +127,10 @@ class SecCptRequest:
 @dataclass
 class SecCptResponse:
     token: str
-    answers: List[str]
+    answers: list[str]
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SecCptResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "SecCptResponse":
         return cls(token=data["token"], answers=data["answers"])
 
 
@@ -140,13 +140,13 @@ class SBSDRequest:
     user_agent: str
     bm_o: str
     url: str
-    legacy: Optional[bool] = None
-    script_hash: Optional[str] = None
-    script_url: Optional[str] = None
-    language: Optional[str] = None
+    legacy: bool | None = None
+    script_hash: str | None = None
+    script_url: str | None = None
+    language: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "vid": self.vid,
             "userAgent": self.user_agent,
             "bm_o": self.bm_o,
@@ -168,5 +168,5 @@ class SBSDResponse:
     body: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SBSDResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "SBSDResponse":
         return cls(body=data["body"])

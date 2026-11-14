@@ -1,17 +1,17 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
 class BMPSensorRequest:
     app: str
     proxy: str
-    language: Optional[str] = None
-    device_id: Optional[str] = None
-    android: Optional[bool] = None
-    ipad: Optional[bool] = None
+    language: str | None = None
+    device_id: str | None = None
+    android: bool | None = None
+    ipad: bool | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         result = {k: v for k, v in asdict(self).items() if v is not None}
         if "device_id" in result:
             result["deviceId"] = result.pop("device_id")
@@ -25,7 +25,7 @@ class Cookie:
     domain: str
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Cookie":
+    def from_dict(cls, data: dict[str, Any]) -> "Cookie":
         return cls(
             name=data["name"],
             value=data["value"],
@@ -43,20 +43,20 @@ class BMPSensorResponse:
     screen_width: int
     language: str
 
-    ios: Optional[str] = None
-    kernel_os_release: Optional[str] = None
-    kernel_os_version: Optional[str] = None
-    machine_id: Optional[str] = None
-    cookies: Optional[List[Cookie]] = None
+    ios: str | None = None
+    kernel_os_release: str | None = None
+    kernel_os_version: str | None = None
+    machine_id: str | None = None
+    cookies: list[Cookie] | None = None
 
-    android: Optional[str] = None
-    device_model: Optional[str] = None
-    device_manufacturer: Optional[str] = None
-    sdk_version: Optional[str] = None
-    app_version_code: Optional[int] = None
+    android: str | None = None
+    device_model: str | None = None
+    device_manufacturer: str | None = None
+    sdk_version: str | None = None
+    app_version_code: int | None = None
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "BMPSensorResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "BMPSensorResponse":
         cookies = None
         if "cookies" in data and data["cookies"]:
             cookies = [Cookie.from_dict(c) for c in data["cookies"]]

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 @dataclass
@@ -8,15 +8,17 @@ class ImpervaPayloadRequest:
     # Absolute, or relative to page_url.
     script_url: str
     page_url: str
-    # The User-Agent your requests to the site send, because the payload is built from a collected browser with it.
+    # The User-Agent your requests to the site send, because the payload is
+    # built from a collected browser with it.
     user_agent: str
     # The Accept-Language header your requests send, such as "en-US,en;q=0.9".
     language: str
-    # The site's base64 GPC challenge without the JSON quotes it arrives in. Leave it None when the site has none.
-    pow: Optional[str] = None
+    # The site's base64 GPC challenge without the JSON quotes it arrives in.
+    # Leave it None when the site has none.
+    pow: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
-        result: Dict[str, Any] = {
+    def to_dict(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
             "script": self.script,
             "scriptUrl": self.script_url,
             "pageUrl": self.page_url,
@@ -35,7 +37,7 @@ class ImpervaUTMVCRequest:
     cookies: str
     user_agent: str
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "script": self.script,
             "cookies": self.cookies,
@@ -45,7 +47,11 @@ class ImpervaUTMVCRequest:
 
 @dataclass
 class ImpervaUTMVCResponse:
-    """Only cookie or set_cookie is sent to the site; the fields after them describe how the value was built."""
+    """Holds the ___utmvc cookie that the API built.
+
+    Only cookie or set_cookie is sent to the site. The fields after them
+    describe how the value was built.
+    """
 
     name: str
     value: str
@@ -62,7 +68,7 @@ class ImpervaUTMVCResponse:
     window_key_count: int
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ImpervaUTMVCResponse":
+    def from_dict(cls, data: dict[str, Any]) -> "ImpervaUTMVCResponse":
         return cls(
             name=data["name"],
             value=data["value"],

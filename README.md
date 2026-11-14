@@ -15,18 +15,32 @@ pip install roolink
 ```python
 from roolink import RoolinkClient, WebSensorRequest
 
-client = RoolinkClient("your-api-key")
-
-script_data = client.parse_script(script_text)
-sensor = client.generate_web_sensor(
-    WebSensorRequest(
-        user_agent=user_agent,
-        url="https://example.com/",
-        abck=abck_cookie,
-        bm_sz=bm_sz_cookie,
-        script_data=script_data,
+with RoolinkClient("your-api-key") as client:
+    script_data = client.parse_script(script_text)
+    sensor = client.generate_web_sensor(
+        WebSensorRequest(
+            user_agent=user_agent,
+            url="https://example.com/",
+            abck=abck_cookie,
+            bm_sz=bm_sz_cookie,
+            script_data=script_data,
+        )
     )
-)
+```
+
+The client keeps its connections open for reuse. Use it in a `with` block, or call `client.close()` when you are done with it, to release them.
+
+## Errors
+
+When the API answers with an error status, the client raises `RoolinkError`, whose message holds the status and the response body. It is a subclass of `Exception`.
+
+```python
+from roolink import RoolinkError
+
+try:
+    sensor = client.generate_web_sensor(request)
+except RoolinkError as error:
+    print(error)
 ```
 
 ## Methods
