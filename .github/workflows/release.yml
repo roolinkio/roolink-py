@@ -1,4 +1,4 @@
-# Publishes each version tag, which arrives with its release commit, to PyPI with trusted publishing, then as a GitHub release. PyPI trusts this workflow by its file name.
+# Publishes each version tag, which arrives with its release commit, to PyPI with trusted publishing. PyPI trusts this workflow by its file name.
 name: release
 
 on:
@@ -25,23 +25,3 @@ jobs:
       - run: pip install build
       - run: python -m build
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
-
-  github-release:
-    needs: pypi
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      # The notes list the commits since the previous version, without the release commit itself.
-      - name: Create the GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          previous="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
-          git log --no-merges --format='- %s' "${previous:+${previous}..}${TAG}" | grep -v '^- chore: release ' > notes.md || true
-          gh release create "${TAG}" --verify-tag --title "${TAG}" --notes-file notes.md
