@@ -6,6 +6,18 @@ BMP (`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva
 
 Documentation: <https://docs.roolink.io>
 
+## Table of Contents
+
+<!-- toc -->
+- [Install](#install)
+- [Usage](#usage)
+- [Errors](#errors)
+- [Methods](#methods)
+- [Kasada](#kasada)
+- [Imperva](#imperva)
+- [License](#license)
+<!-- tocstop -->
+
 ## Install
 
 ```sh

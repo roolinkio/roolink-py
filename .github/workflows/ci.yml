@@ -1,4 +1,3 @@
-# Installs and tests the package on every pull request and push, at the oldest Python its pyproject.toml allows and a current one.
 name: ci
 
 on:

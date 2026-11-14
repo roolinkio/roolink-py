@@ -63,24 +63,14 @@ class RoolinkClient:
         )
 
     def _request(
-        self,
-        method: str,
-        url: str,
-        body: str,
-        content_type: str,
-        compress: bool = False,
+        self, url: str, body: str, content_type: str, compress: bool = False
     ) -> dict[str, Any]:
         return json.loads(
-            self._send(method, url, body, content_type, compress=compress)
+            self._send(url, body, content_type, compress=compress)
         )
 
     def _send(
-        self,
-        method: str,
-        url: str,
-        body: str,
-        content_type: str,
-        compress: bool = False,
+        self, url: str, body: str, content_type: str, compress: bool = False
     ) -> str:
         headers = {
             "x-api-key": self.api_key,
@@ -90,9 +80,8 @@ class RoolinkClient:
         if compress:
             headers["Content-Encoding"] = "gzip"
 
-        response = self.client.request(
-            method=method,
-            url=url,
+        response = self.client.post(
+            url,
             content=gzip.compress(body.encode()) if compress else body,
             headers=headers,
         )
@@ -119,81 +108,55 @@ class RoolinkClient:
     ) -> None:
         self.close()
 
-    def __del__(self) -> None:
-        """Closes the client for callers that never call close.
-
-        Python does not promise to run it, so close the client with close or a
-        with block instead.
-        """
-        # The attribute is missing when __init__ failed before setting it.
-        if hasattr(self, "client"):
-            self.close()
-
     def generate_bmp_sensor(self, req: BMPSensorRequest) -> BMPSensorResponse:
         url = f"{BMP_BASE_URL}/api/v1/sensor"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return BMPSensorResponse.from_dict(data)
 
     def generate_web_sensor(self, req: WebSensorRequest) -> WebSensorResponse:
         url = f"{WEB_BASE_URL}/api/v1/sensor"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return WebSensorResponse.from_dict(data)
 
     def generate_pixel(self, req: PixelRequest) -> PixelResponse:
         """Returns the sensor, which /pixel sends as text/plain, not JSON."""
         url = f"{WEB_BASE_URL}/api/v1/pixel"
-        text = self._send(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        text = self._send(url, json.dumps(req.to_dict()), "application/json")
         return PixelResponse(sensor=text)
 
     def solve_sec_cpt(self, req: SecCptRequest) -> SecCptResponse:
         url = f"{WEB_BASE_URL}/api/v1/sec-cpt"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return SecCptResponse.from_dict(data)
 
     def solve_sbsd(self, req: SBSDRequest) -> SBSDResponse:
         url = f"{WEB_BASE_URL}/api/v1/sbsd"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return SBSDResponse.from_dict(data)
 
     def parse_script(self, script_content: str) -> dict[str, Any]:
         url = f"{WEB_BASE_URL}/api/v1/parse"
         return self._request(
-            "POST", url, script_content, "text/plain", compress=self.compress
+            url, script_content, "text/plain", compress=self.compress
         )
 
     def generate_kasada_payload(
         self, req: KasadaPayloadRequest
     ) -> KasadaPayloadResponse:
         url = f"{KASADA_BASE_URL}/api/v1/payload"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return KasadaPayloadResponse.from_dict(data)
 
     def generate_kasada_cd(self, req: KasadaCDRequest) -> KasadaCDResponse:
         url = f"{KASADA_BASE_URL}/api/v1/cd"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return KasadaCDResponse.from_dict(data)
 
     def generate_kasada_bot_id(
         self, req: KasadaBotIDRequest
     ) -> KasadaBotIDResponse:
         url = f"{KASADA_BASE_URL}/api/v1/botid"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return KasadaBotIDResponse.from_dict(data)
 
     def generate_imperva_payload(self, req: ImpervaPayloadRequest) -> str:
@@ -202,15 +165,11 @@ class RoolinkClient:
         Post it to the challenge endpoint unchanged.
         """
         url = f"{IMPERVA_BASE_URL}/api/v1/payload"
-        return self._send(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        return self._send(url, json.dumps(req.to_dict()), "application/json")
 
     def generate_imperva_utmvc(
         self, req: ImpervaUTMVCRequest
     ) -> ImpervaUTMVCResponse:
         url = f"{IMPERVA_BASE_URL}/api/v1/utmvc"
-        data = self._request(
-            "POST", url, json.dumps(req.to_dict()), "application/json"
-        )
+        data = self._request(url, json.dumps(req.to_dict()), "application/json")
         return ImpervaUTMVCResponse.from_dict(data)

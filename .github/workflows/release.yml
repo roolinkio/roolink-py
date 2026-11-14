@@ -1,4 +1,3 @@
-# Publishes each version tag, which arrives with its release commit, to PyPI with trusted publishing. PyPI trusts this workflow by its file name.
 name: release
 
 on:

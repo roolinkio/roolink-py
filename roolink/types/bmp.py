@@ -58,7 +58,7 @@ class BMPSensorResponse:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "BMPSensorResponse":
         cookies = None
-        if "cookies" in data and data["cookies"]:
+        if data.get("cookies"):
             cookies = [Cookie.from_dict(c) for c in data["cookies"]]
 
         return cls(

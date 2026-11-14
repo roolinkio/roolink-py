@@ -96,8 +96,6 @@ def test_close_is_safe_to_repeat():
     client.close()
     client.close()
     assert client.client.is_closed
-    # The finalizer closes the client a third time.
-    del client
 
 
 def test_user_agent_names_sdk_and_version():
