@@ -9,6 +9,7 @@ Documentation: <https://docs.roolink.io>
 ## Table of Contents
 
 <!-- toc -->
+
 - [Install](#install)
 - [Usage](#usage)
 - [Errors](#errors)
@@ -16,6 +17,7 @@ Documentation: <https://docs.roolink.io>
 - [Kasada](#kasada)
 - [Imperva](#imperva)
 - [License](#license)
+
 <!-- tocstop -->
 
 ## Install
@@ -62,19 +64,19 @@ except RoolinkError as error:
 
 ## Methods
 
-| Method | Endpoint |
-| --- | --- |
-| `parse_script(script_text)` | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; pass `compress=False` to `RoolinkClient` to disable) |
-| `generate_web_sensor(WebSensorRequest)` | `POST https://web.roolink.io/api/v1/sensor` |
-| `generate_pixel(PixelRequest)` | `POST https://web.roolink.io/api/v1/pixel` |
-| `solve_sec_cpt(SecCptRequest)` | `POST https://web.roolink.io/api/v1/sec-cpt` |
-| `solve_sbsd(SBSDRequest)` | `POST https://web.roolink.io/api/v1/sbsd` |
-| `generate_bmp_sensor(BMPSensorRequest)` | `POST https://bmp.roolink.io/api/v1/sensor` (`android=False` for iOS, `android=True` for Android) |
-| `generate_kasada_payload(KasadaPayloadRequest)` | `POST https://ksd.roolink.io/api/v1/payload` |
-| `generate_kasada_cd(KasadaCDRequest)` | `POST https://ksd.roolink.io/api/v1/cd` |
-| `generate_kasada_bot_id(KasadaBotIDRequest)` | `POST https://ksd.roolink.io/api/v1/botid` |
-| `generate_imperva_payload(ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload` |
-| `generate_imperva_utmvc(ImpervaUTMVCRequest)` | `POST https://imperva.roolink.io/api/v1/utmvc` |
+| Method                                            | Endpoint                                                                                                                     |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `parse_script(script_text)`                       | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; pass `compress=False` to `RoolinkClient` to disable) |
+| `generate_web_sensor(WebSensorRequest)`           | `POST https://web.roolink.io/api/v1/sensor`                                                                                  |
+| `generate_pixel(PixelRequest)`                    | `POST https://web.roolink.io/api/v1/pixel`                                                                                   |
+| `solve_sec_cpt(SecCptRequest)`                    | `POST https://web.roolink.io/api/v1/sec-cpt`                                                                                 |
+| `solve_sbsd(SBSDRequest)`                         | `POST https://web.roolink.io/api/v1/sbsd`                                                                                    |
+| `generate_bmp_sensor(BMPSensorRequest)`           | `POST https://bmp.roolink.io/api/v1/sensor` (`android=False` for iOS, `android=True` for Android)                            |
+| `generate_kasada_payload(KasadaPayloadRequest)`   | `POST https://ksd.roolink.io/api/v1/payload`                                                                                 |
+| `generate_kasada_cd(KasadaCDRequest)`             | `POST https://ksd.roolink.io/api/v1/cd`                                                                                      |
+| `generate_kasada_bot_id(KasadaBotIDRequest)`      | `POST https://ksd.roolink.io/api/v1/botid`                                                                                   |
+| `generate_imperva_payload(ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload`                                                                             |
+| `generate_imperva_utmvc(ImpervaUTMVCRequest)`     | `POST https://imperva.roolink.io/api/v1/utmvc`                                                                               |
 
 ## Kasada
 
